@@ -11,7 +11,7 @@ export default function AdminPage() {
         <StatCard label="Attendance logs" />
       </div>
 
-      <div className="bg-white mt-6 p-5 border border-slate-100 rounded-2xl">
+      <div className="bg-white mt-6 p-5 border border-slate-200 rounded-2xl">
         <div className="flex justify-between items-center gap-3">
           <div>
             <div className="font-semibold text-slate-900 text-sm">Dashboard</div>

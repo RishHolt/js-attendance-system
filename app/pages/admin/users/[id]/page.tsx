@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, User, Mail, Calendar, Shield, Phone, Briefcase, Clock, CalendarDays, Users } from "lucide-react";
+import { ArrowLeft, User, CalendarDays, Users, ChevronRight, Shield, Mail, Phone, Briefcase, Calendar } from "lucide-react";
 import { getAuthToken } from "@/app/lib/auth";
 import PageHeader from "@/app/components/admin/PageHeader";
+import Modal from "@/app/components/Modal";
 
 type UserProfile = {
   id: string;
@@ -107,15 +108,15 @@ export default function ProfilePage() {
   return (
     <>
       <PageHeader 
-        title="User Profile" 
-        subtitle="View and manage user information" 
+        title={activeTab === 'profile' ? 'User Profile' : activeTab === 'schedule' ? 'User Schedule' : 'User Attendance'}
+        subtitle={user ? `Manage ${activeTab === 'profile' ? 'profile information' : activeTab === 'schedule' ? 'work schedule' : 'attendance records'} for ${user.name}` : 'Loading user information...'}
         actions={
           <button
             onClick={() => router.back()}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Back to Users
           </button>
         }
       />
@@ -249,18 +250,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Status */}
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-slate-400 mt-0.5" />
-                    <div>
-                      <div className="text-sm text-slate-500 mb-1">Account Status</div>
-                      <div className="text-slate-900">{user.status === 'active' ? 'Active' : 'Inactive'}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Join Date */}
-                <div className="mt-6 pt-6 border-t border-slate-100">
+                  {/* Member Since */}
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-slate-400 mt-0.5" />
                     <div>
@@ -276,12 +266,100 @@ export default function ProfilePage() {
       )}
 
       {activeTab === 'schedule' && (
-        <div className="text-center py-12">
-          <CalendarDays className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Schedule</h3>
-          <p className="text-slate-500">User schedule and work hours will be displayed here.</p>
-          <div className="mt-6 p-4 bg-slate-50 rounded-lg">
-            <p className="text-sm text-slate-600">📅 Schedule management coming soon...</p>
+        <div className="space-y-6">
+          {/* Schedule Overview */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-slate-900">Work Schedule</h3>
+              <button 
+                onClick={() => router.push(`/admin/users/${params.id}/edit-schedule`)}
+                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors text-sm font-medium"
+              >
+                Edit Schedule
+              </button>
+            </div>
+
+            {/* Weekly Schedule */}
+            <div className="grid grid-cols-7 gap-2 mb-6">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
+                <div key={day} className="text-center">
+                  <div className="text-xs font-medium text-slate-500 mb-2">{day}</div>
+                  <div className={`p-3 rounded-lg border ${
+                    index < 5 
+                      ? 'bg-emerald-50 border-emerald-200' 
+                      : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className="text-xs font-medium">
+                      {index < 5 ? '9:00 - 18:00' : 'Off'}
+                    </div>
+                    {index < 5 && (
+                      <div className="text-xs text-slate-500 mt-1">9 hours</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Schedule Details */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-slate-900">Work Days</span>
+                </div>
+                <span className="text-sm text-slate-600">Monday - Friday</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-slate-900">Working Hours</span>
+                </div>
+                <span className="text-sm text-slate-600">9:00 AM - 6:00 PM</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-slate-900">Break Duration</span>
+                </div>
+                <span className="text-sm text-slate-600">1 hour</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                  <span className="text-sm font-medium text-slate-900">Time Zone</span>
+                </div>
+                <span className="text-sm text-slate-600">UTC+8 (Asia/Singapore)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Upcoming Shifts */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Upcoming Shifts</h3>
+            <div className="space-y-3">
+              {[
+                { date: 'Today', time: '9:00 AM - 6:00 PM', status: 'active' },
+                { date: 'Tomorrow', time: '9:00 AM - 6:00 PM', status: 'scheduled' },
+                { date: 'Dec 28, 2024', time: '9:00 AM - 6:00 PM', status: 'scheduled' },
+              ].map((shift, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div>
+                    <div className="text-sm font-medium text-slate-900">{shift.date}</div>
+                    <div className="text-xs text-slate-500">{shift.time}</div>
+                  </div>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    shift.status === 'active' 
+                      ? 'bg-emerald-100 text-emerald-700' 
+                      : 'bg-blue-100 text-blue-700'
+                  }`}>
+                    {shift.status === 'active' ? 'Active' : 'Scheduled'}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

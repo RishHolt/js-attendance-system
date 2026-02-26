@@ -74,7 +74,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
             </div>
 
             {/* Content */}
-            <div className="px-6 py-4">{children}</div>
+            <div>{children}</div>
           </motion.div>
         </div>
       )}

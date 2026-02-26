@@ -55,3 +55,28 @@ body {
   animation: scale-in 0.2s ease-out;
   transform-origin: top right;
 }
+
+/* Custom scrollbar styles */
+*::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #0284c7 !important;
+  border-radius: 3px !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #0369a1 !important;
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: #0284c7 transparent !important;
+}

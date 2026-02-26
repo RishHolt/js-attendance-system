@@ -10,11 +10,34 @@ import { getAuthToken } from "@/app/lib/auth";
 const breadcrumbMap: Record<string, { label: string; shortLabel?: string; icon: React.ReactNode }> = {
   "/admin/dashboard": { label: "Dashboard", shortLabel: "Dashboard", icon: <LayoutDashboard className="w-3.5 h-3.5" /> },
   "/admin/users": { label: "User Management", shortLabel: "Users", icon: <Users className="w-3.5 h-3.5" /> },
+  "/admin/users/[id]": { label: "User Profile", shortLabel: "Profile", icon: <User className="w-3.5 h-3.5" /> },
 };
 
 function Breadcrumbs() {
   const pathname = usePathname();
-  const current = breadcrumbMap[pathname];
+  
+  // Handle dynamic routes
+  let current = breadcrumbMap[pathname];
+  let dynamicLabel = "";
+  
+  if (pathname?.startsWith('/admin/users/') && pathname !== '/admin/users') {
+    const parts = pathname.split('/');
+    const lastPart = parts[parts.length - 1];
+    
+    if (lastPart === 'schedule') {
+      dynamicLabel = "User Schedule";
+    } else if (lastPart === 'edit-schedule') {
+      dynamicLabel = "Edit Schedule";
+    } else {
+      dynamicLabel = "User Profile";
+    }
+    
+    current = {
+      label: dynamicLabel,
+      shortLabel: dynamicLabel.replace('User ', ''),
+      icon: <User className="w-3.5 h-3.5" />
+    };
+  }
 
   return (
     <nav className="flex items-center gap-1.5 text-xs" aria-label="Breadcrumb">
@@ -22,7 +45,21 @@ function Breadcrumbs() {
         Admin
       </Link>
       <span className="text-slate-400 sm:hidden">A</span>
-      {current && (
+      <ChevronRight className="w-3 h-3 text-slate-300" />
+      <Link href="/admin/users" className="text-slate-400 hover:text-slate-600 transition">
+        Users
+      </Link>
+      {current && pathname?.startsWith('/admin/users/') && pathname !== '/admin/users' && (
+        <>
+          <ChevronRight className="w-3 h-3 text-slate-300" />
+          <span className="flex items-center gap-1.5 font-medium text-slate-700">
+            {current.icon}
+            <span className="hidden sm:inline">{current.label}</span>
+            <span className="sm:hidden">{current.shortLabel || current.label}</span>
+          </span>
+        </>
+      )}
+      {current && !pathname?.startsWith('/admin/users/') && (
         <>
           <ChevronRight className="w-3 h-3 text-slate-300" />
           <span className="flex items-center gap-1.5 font-medium text-slate-700">
