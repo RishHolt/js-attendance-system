@@ -55,10 +55,10 @@ export default function LoginPage() {
 
       if (result.role === "admin" || result.isAdmin) {
         setErrorMessage(null);
-        router.push("/pages/admin");
+        router.push("/admin/dashboard");
       } else if (result.role === "user") {
         setErrorMessage(null);
-        router.push("/pages/user");
+        router.push("/user/dashboard");
       } else {
         setErrorMessage("Invalid username or password.");
       }
@@ -133,13 +133,13 @@ export default function LoginPage() {
             className="space-y-1.5"
           >
             <label htmlFor="username" className="font-medium text-slate-700 text-xs">
-              Username
+              Username or Email
             </label>
             <Input
               id="username"
               type="text"
               autoComplete="username"
-              placeholder="Enter your username"
+              placeholder="Enter username or email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
